@@ -1,8 +1,9 @@
-package cn.albert.library;
+package cn.albert.autosystembar;
 
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -21,6 +22,7 @@ import java.lang.reflect.Method;
 class Utils {
 
     private static final String TAG = "Utils";
+    private static final String KEY_DISPLAY = "ro.build.display.id";
 
     private static boolean sIsInitializeStatusBar;
     static int sStatusBarHeight;
@@ -33,7 +35,6 @@ class Utils {
         }
         sIsInitializeStatusBar = true;
         Context context = view.getContext();
-
         try {
             Class<?> clazz = Class.forName("com.android.internal.R$dimen");
             Field field = clazz.getField("status_bar_height");
@@ -59,7 +60,6 @@ class Utils {
         if (sIsInitializeNavigationBar) {
             return;
         }
-
         sIsInitializeNavigationBar = true;
         Context context = view.getContext();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -96,18 +96,20 @@ class Utils {
     }
 
 
-    public static boolean isEMUI3_1() {
+    static boolean isEMUI3_1() {
         String property = getSystemProperty(KEY_EMUI_VERSION_NAME, "");
-        if ("EmotionUI 3".equals(property) || property.contains("EmotionUI_3.1")) {
-            return true;
-        }
-        return false;
+        return !TextUtils.isEmpty(property) && ("EmotionUI 3".equals(property) || property.contains("EmotionUI_3.1"));
     }
 
-    public static boolean isAfterMIUI_7_7_13(){
+    static boolean isAfterMIUI_7_7_13(){
         String property = getSystemProperty(KEY_MIUI_VERSION_NAME, "");
         Log.d(TAG, "isAfterMIUI_7_7_13: " + property);
         // TODO: 2017/9/27
         return false;
+    }
+
+    static boolean isFlymeOS() {
+        String property = getSystemProperty(KEY_DISPLAY, "");
+        return !TextUtils.isEmpty(property) && property.toLowerCase().contains("flyme");
     }
 }

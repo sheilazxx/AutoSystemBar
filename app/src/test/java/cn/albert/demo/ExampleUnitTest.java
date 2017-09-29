@@ -1,4 +1,4 @@
-package cn.albert.library;
+package cn.albert.demo;
 
 import org.junit.Test;
 

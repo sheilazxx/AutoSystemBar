@@ -1,4 +1,4 @@
-package cn.albert.library;
+package cn.albert.autosystembar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,16 +13,22 @@ import android.view.WindowManager;
  *
  */
 
-interface NavigationBarInsert {
+interface INavigationBar {
 
     boolean expandLayoutToNavigationBar(Activity activity);
+    boolean verify();
 
 
-    class Base implements NavigationBarInsert{
+    class Base implements INavigationBar {
 
         @Override
         public boolean expandLayoutToNavigationBar(Activity activity) {
             return false;
+        }
+
+        @Override
+        public boolean verify() {
+            return true;
         }
     }
 
@@ -34,6 +40,11 @@ interface NavigationBarInsert {
             Window window = activity.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             return true;
+        }
+
+        @Override
+        public boolean verify() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
         }
     }
 
@@ -49,6 +60,11 @@ interface NavigationBarInsert {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setNavigationBarColor(Color.TRANSPARENT);
             return true;
+        }
+
+        @Override
+        public boolean verify() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         }
     }
 }

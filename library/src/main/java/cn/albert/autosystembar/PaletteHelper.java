@@ -1,7 +1,8 @@
-package cn.albert.library;
+package cn.albert.autosystembar;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
 
@@ -12,9 +13,10 @@ import java.util.List;
 
 /**
  * Created by albert on 2017/9/27.
+ *
  */
 
-public class PaletteHelper {
+class PaletteHelper {
 
     private Palette.Builder mBuilder;
     private boolean mIsCanceled;
@@ -23,6 +25,7 @@ public class PaletteHelper {
     private static final float WHITE_MIN_LIGHTNESS = 0.95f;
     private static final float MIDDLE_LIGHTNESS = 0.50f;
     private Rect mRect;
+    private Bitmap mBitmap;
 
     private static final Palette.Filter FILTER = new Palette.Filter() {
 
@@ -32,32 +35,21 @@ public class PaletteHelper {
         }
     };
 
-
-    public PaletteHelper(Bitmap bitmap, Rect rect){
-        mRect=rect;
+    public PaletteHelper(@NonNull Bitmap bitmap, Rect rect){
+        if (bitmap.isRecycled()) {
+            throw new IllegalArgumentException("Bitmap is not valid");
+        }
+        mRect = rect;
+        mBitmap = bitmap;
         mBuilder = new Palette.Builder(bitmap)
-                .clearFilters()
                 .addFilter(FILTER)
                 .setRegion(rect.left, rect.top, rect.right, rect.bottom);
     }
 
-    public void getPaletteSwatch(final Consumer<Palette> callback){
+    void findCloseColor(final OnPaletteCallback onPaletteCallback){
         mBuilder.generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
-                if(!mIsCanceled && callback != null){
-                    callback.accept(palette);
-                }
-
-            }
-        });
-    }
-
-    public void getDarkPalette(final Bitmap bitmap, final OnPaletteCallback onPaletteCallback){
-        getPaletteSwatch(new Consumer<Palette>() {
-            @Override
-            public void accept(Palette palette) {
-
                 List<Palette.Swatch> swatches = new ArrayList<>(palette.getSwatches());
                 Palette.Swatch populationSwatch = null;
                 if(!swatches.isEmpty()) {
@@ -69,7 +61,7 @@ public class PaletteHelper {
                                 return 1;
                             } else if (lhs != null && rhs == null) {
                                 return -1;
-                            } else if (lhs == null && rhs == null) {
+                            } else if (lhs == null) {
                                 return 0;
                             } else {
                                 return rhs.getPopulation() - lhs.getPopulation();
@@ -79,33 +71,45 @@ public class PaletteHelper {
                     populationSwatch = swatches.get(0);
                 }
 
-                boolean blackFlag = true;
+                boolean isDarkStyle = true;
+                int color = -1;
                 if(populationSwatch == null) {
                     try {
                         // bitmap is get close to full black or white
-                        int c = bitmap.getPixel(mRect.right / 2, mRect.bottom / 2);
-                        ColorUtils.colorToHSL(c, mTemp);
+                        color = mBitmap.getPixel(mRect.right / 2, mRect.bottom / 2);
+                        ColorUtils.colorToHSL(color, mTemp);
                         if (mTemp[2] <= BLACK_MAX_LIGHTNESS) {
-                            blackFlag = false;
+                            isDarkStyle = false;
                         } else if (mTemp[2] >= WHITE_MIN_LIGHTNESS) {
-                            blackFlag = true;
+                            isDarkStyle = true;
                         }
                     } catch (Exception ignore) {
                     }
                 }else {
-                    ColorUtils.colorToHSL(populationSwatch.getTitleTextColor(), mTemp);
+                    color = populationSwatch.getRgb();
+                    ColorUtils.colorToHSL(color, mTemp);
                     float distance = mTemp[2] - MIDDLE_LIGHTNESS;
-                    blackFlag = distance <= 0;
+                    isDarkStyle = distance <=  0;
                 }
-                if(!mIsCanceled && onPaletteCallback != null) {
-                    onPaletteCallback.onPaletteSwatchDone(blackFlag);
+                if(!mIsCanceled && onPaletteCallback != null && color != -1) {
+                    onPaletteCallback.onSuccess(new Model(color, isDarkStyle));
                 }
             }
         });
     }
 
-    public interface OnPaletteCallback{
-        void onPaletteSwatchDone(boolean isDarkPalette);
+    static class Model{
+        int color;
+        boolean isDarkStyle;
+
+        Model(int color, boolean isDarkStyle) {
+            this.color = color;
+            this.isDarkStyle = isDarkStyle;
+        }
+    }
+
+    interface OnPaletteCallback{
+        void onSuccess(Model model);
     }
 
     public void cancel(){

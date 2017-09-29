@@ -1,14 +1,12 @@
-package cn.albert.autosystembar
+package cn.albert.demo
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.health.SystemHealthManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.Toast
-import cn.albert.library.SystemBarHelper
+import cn.albert.autosystembar.SystemBarHelper
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import kotlinx.android.synthetic.main.activity_main.*

@@ -1,4 +1,4 @@
-package cn.albert.autosystembar;
+package cn.albert.demo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

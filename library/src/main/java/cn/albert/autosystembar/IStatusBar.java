@@ -1,4 +1,4 @@
-package cn.albert.library;
+package cn.albert.autosystembar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,15 +13,21 @@ import android.view.WindowManager;
  *
  */
 
-interface StatusBarInsert {
+interface IStatusBar {
 
     boolean expandLayoutToStatusBar(Activity activity);
+    boolean verify();
 
-    class Base implements StatusBarInsert {
+    class Base implements IStatusBar {
 
         @Override
         public boolean expandLayoutToStatusBar(Activity activity) {
             return false;
+        }
+
+        @Override
+        public boolean verify() {
+            return true;
         }
     }
 
@@ -34,11 +40,20 @@ interface StatusBarInsert {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             return true;
         }
+
+        @Override
+        public boolean verify() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     class EMUI3_1 extends Kitkat{
 
+        @Override
+        public boolean verify() {
+            return Utils.isEMUI3_1();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -55,6 +70,11 @@ interface StatusBarInsert {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
             return true;
+        }
+
+        @Override
+        public boolean verify() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         }
     }
 }

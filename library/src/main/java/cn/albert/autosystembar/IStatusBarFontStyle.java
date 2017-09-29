@@ -1,4 +1,4 @@
-package cn.albert.library;
+package cn.albert.autosystembar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -10,25 +10,34 @@ import android.view.WindowManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static cn.albert.autosystembar.Utils.isAfterMIUI_7_7_13;
+import static cn.albert.autosystembar.Utils.isFlymeOS;
+
 /**
  * Created by albert on 2017/9/26.
  *
  */
 
-interface StatusBarFontStyle {
+interface IStatusBarFontStyle {
 
     boolean statusBarFontStyle(Activity activity, boolean darkFont);
+    boolean verify();
 
-    class Base implements StatusBarFontStyle {
+    class Base implements IStatusBarFontStyle {
 
         @Override
         public boolean statusBarFontStyle(Activity activity, boolean darkFont) {
             return false;
         }
+
+        @Override
+        public boolean verify() {
+            return true;
+        }
     }
 
 
-    class Meizu implements StatusBarFontStyle{
+    class Meizu implements IStatusBarFontStyle {
 
         @Override
         public boolean statusBarFontStyle(Activity activity, boolean darkFont) {
@@ -52,9 +61,14 @@ interface StatusBarFontStyle {
             }
             return false;
         }
+
+        @Override
+        public boolean verify() {
+            return isFlymeOS();
+        }
     }
 
-    class MIUI implements StatusBarFontStyle{
+    class MIUI implements IStatusBarFontStyle {
 
         @Override
         public boolean statusBarFontStyle(Activity activity, boolean darkFont) {
@@ -75,6 +89,11 @@ interface StatusBarFontStyle {
             }
             return false;
         }
+
+        @Override
+        public boolean verify() {
+            return isAfterMIUI_7_7_13();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -90,6 +109,11 @@ interface StatusBarFontStyle {
                 decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
             return true;
+        }
+
+        @Override
+        public boolean verify() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
         }
     }
 }
