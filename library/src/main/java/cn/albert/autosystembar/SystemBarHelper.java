@@ -2,11 +2,15 @@ package cn.albert.autosystembar;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
-import android.util.Log;
+import android.support.v4.view.OnApplyWindowInsetsListener;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -15,7 +19,6 @@ import android.view.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Handler;
 
 /**
  * Created by albert on 2017/9/27.
@@ -189,7 +192,7 @@ public class SystemBarHelper {
             }
 
             boolean isExpandedLayout2NavigationBar = false;
-            if(mIsSetNavigationBarColor || (mNavigationBarDrawable != null) ){
+            if(mIsSetNavigationBarColor || mNavigationBarDrawable != null ||  mIsImmersedNavigationBar){
                 for (INavigationBar navigationBar: NAVIGATION_BARS){
                     if(navigationBar.verify()){
                         isExpandedLayout2NavigationBar = navigationBar.expandLayoutToNavigationBar(activity);
@@ -214,15 +217,24 @@ public class SystemBarHelper {
                 androidContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
+                        if(mIsAuto) {
+                            decorView.setDrawingCacheEnabled(true);
+                            final Bitmap bitmap = Bitmap.createBitmap(decorView.getDrawingCache());
+                            decorView.setDrawingCacheEnabled(false);
+                            if (bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+                                int top = Utils.sStatusBarHeight + PADDING;
+                                int bottom = (int) (top + ACTION_BAR_DEFAULT_HEIGHT * decorView.getResources().getDisplayMetrics().density);
+                                Rect rect = new Rect(0, top, bitmap.getWidth(), bottom);
+                                PaletteHelper paletteHelper = new PaletteHelper(bitmap, rect);
+                                PaletteHelper.Model model = paletteHelper.findCloseColorWithSync();
+                                mIsSetStatusBarColor = true;
+                                mStatusBarColor = model.color;
+                                mStatusBarFontStyle = model.isDarkStyle ? STATUS_BAR_DARK_FONT_STYLE : STATUS_BAR_LIGHT_FONT_STYLE;
+                            }
+                        }
                         final ViewGroup realContent = ((ViewGroup) androidContent);
                         View content = realContent.getChildAt(0);
-                        if(content != null){
-                            realContent.removeView(content);
-                            InternalLayout layout = new InternalLayout(activity);
-                            layout.setContentView(content);
-                            realContent.addView(layout);
-                            mInternalLayout = layout;
-                        }
+                        insertContentView(realContent, content, activity);
 
                         if(mInternalLayout != null){
                             mInternalLayout.setStatusBarVisibility(true);
@@ -241,29 +253,6 @@ public class SystemBarHelper {
                             helper.setNavigationBarDrawable(mNavigationBarDrawable);
                         }
 
-                        if(mIsAuto){
-                            new android.os.Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    decorView.setDrawingCacheEnabled(true);
-                                    final Bitmap bitmap = Bitmap.createBitmap(decorView.getDrawingCache());
-                                    decorView.setDrawingCacheEnabled(false);
-                                    if(bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
-                                        int top = Utils.sStatusBarHeight + PADDING;
-                                        int bottom = (int) (top + ACTION_BAR_DEFAULT_HEIGHT * decorView.getResources().getDisplayMetrics().density);
-                                        Rect rect = new Rect(0, top, bitmap.getWidth(), bottom);
-                                        PaletteHelper paletteHelper = new PaletteHelper(bitmap, rect);
-                                        paletteHelper.findCloseColor(new PaletteHelper.OnPaletteCallback() {
-                                            @Override
-                                            public void onSuccess(PaletteHelper.Model model) {
-                                                helper.setStatusBarColor(model.color);
-                                                helper.statusBarFontStyle(model.isDarkStyle ? STATUS_BAR_DARK_FONT_STYLE : STATUS_BAR_LIGHT_FONT_STYLE);
-                                            }
-                                        });
-                                    }
-                                }
-                            }, 300);
-                        }else  {
                             if (mIsSetStatusBarColor) {
                                 helper.setStatusBarColor(mStatusBarColor);
                             }
@@ -271,7 +260,6 @@ public class SystemBarHelper {
                                 helper.setStatusBarDrawable(mStatusBarDrawable);
                             }
                             helper.statusBarFontStyle(mStatusBarFontStyle);
-                        }
 
                         androidContent.getViewTreeObserver().removeOnPreDrawListener(this);
                         return true;
@@ -279,7 +267,63 @@ public class SystemBarHelper {
                 });
             }
         }
+
+        private void insertContentView(ViewGroup realContent, View content, Activity activity) {
+            DrawerLayout drawerLayout  = findDrawerLayout(realContent);
+            if(drawerLayout != null){
+                ViewCompat.requestApplyInsets(realContent);
+                ViewCompat.setOnApplyWindowInsetsListener(realContent, new OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                        return insets.consumeSystemWindowInsets();
+                    }
+                });
+
+                InternalLayout newContent = new InternalLayout(activity);
+
+                View originContent = drawerLayout.getChildAt(0);
+                View originDrawer = drawerLayout.getChildAt(1);
+
+                drawerLayout.removeView(originContent);
+
+                newContent.setStatusBarVisibility(true);
+                newContent.setContentView(originContent);
+                drawerLayout.addView(newContent, 0);
+                mInternalLayout = newContent;
+            }else {
+                realContent.removeView(content);
+                InternalLayout layout = new InternalLayout(activity);
+                layout.setContentView(content);
+                realContent.addView(layout);
+                mInternalLayout = layout;
+            }
+        }
+
+        private DrawerLayout findDrawerLayout(ViewGroup parent){
+            if(parent instanceof DrawerLayout){
+                return ((DrawerLayout) parent);
+            }
+            int childCount = parent.getChildCount();
+            View child ;
+            for (int i = 0; i < childCount; i++){
+                child = parent.getChildAt(i);
+                if(child instanceof DrawerLayout){
+                    return ((DrawerLayout) child);
+                }
+                if(child instanceof  ViewGroup){
+                    DrawerLayout drawer = findDrawerLayout(((ViewGroup) child));
+                    if(drawer != null){
+                        return drawer;
+                    }
+                }
+            }
+            return null;
+        }
+
+
+
     }
+
 
 
 }

@@ -46,56 +46,70 @@ class PaletteHelper {
                 .setRegion(rect.left, rect.top, rect.right, rect.bottom);
     }
 
-    void findCloseColor(final OnPaletteCallback onPaletteCallback){
+    Model findCloseColorWithSync(){
+        return findCloseColorModel(mBuilder.generate());
+    }
+
+    void findCloseColorWithAsync(final OnPaletteCallback onPaletteCallback){
+
         mBuilder.generate(new Palette.PaletteAsyncListener() {
             @Override
             public void onGenerated(Palette palette) {
-                List<Palette.Swatch> swatches = new ArrayList<>(palette.getSwatches());
-                Palette.Swatch populationSwatch = null;
-                if(!swatches.isEmpty()) {
-                    // get the max population Palette.Swatch
-                    Collections.sort(swatches, new Comparator<Palette.Swatch>() {
-                        @Override
-                        public int compare(Palette.Swatch lhs, Palette.Swatch rhs) {
-                            if (lhs == null && rhs != null) {
-                                return 1;
-                            } else if (lhs != null && rhs == null) {
-                                return -1;
-                            } else if (lhs == null) {
-                                return 0;
-                            } else {
-                                return rhs.getPopulation() - lhs.getPopulation();
-                            }
-                        }
-                    });
-                    populationSwatch = swatches.get(0);
-                }
-
-                boolean isDarkStyle = true;
-                int color = -1;
-                if(populationSwatch == null) {
-                    try {
-                        // bitmap is get close to full black or white
-                        color = mBitmap.getPixel(mRect.right / 2, mRect.bottom / 2);
-                        ColorUtils.colorToHSL(color, mTemp);
-                        if (mTemp[2] <= BLACK_MAX_LIGHTNESS) {
-                            isDarkStyle = false;
-                        } else if (mTemp[2] >= WHITE_MIN_LIGHTNESS) {
-                            isDarkStyle = true;
-                        }
-                    } catch (Exception ignore) {
-                    }
-                }else {
-                    color = populationSwatch.getRgb();
-                    ColorUtils.colorToHSL(color, mTemp);
-                    float distance = mTemp[2] - MIDDLE_LIGHTNESS;
-                    isDarkStyle = distance <=  0;
-                }
-                if(!mIsCanceled && onPaletteCallback != null && color != -1) {
-                    onPaletteCallback.onSuccess(new Model(color, isDarkStyle));
+                Model model = findCloseColorModel(palette);
+                if(!mIsCanceled && onPaletteCallback != null) {
+                    onPaletteCallback.onSuccess(model);
                 }
             }
         });
+    }
+
+    private Model findCloseColorModel(Palette palette) {
+        List<Palette.Swatch> swatches = new ArrayList<>(palette.getSwatches());
+        Palette.Swatch populationSwatch = null;
+        if(!swatches.isEmpty()) {
+            // get the max population Palette.Swatch
+            Collections.sort(swatches, new Comparator<Palette.Swatch>() {
+                @Override
+                public int compare(Palette.Swatch lhs, Palette.Swatch rhs) {
+                    if (lhs == null && rhs != null) {
+                        return 1;
+                    } else if (lhs != null && rhs == null) {
+                        return -1;
+                    } else if (lhs == null) {
+                        return 0;
+                    } else {
+                        return rhs.getPopulation() - lhs.getPopulation();
+                    }
+                }
+            });
+            populationSwatch = swatches.get(0);
+        }
+
+        boolean isDarkStyle = false;
+        int color = -1;
+        if(populationSwatch == null) {
+            try {
+                // bitmap is get close to full black or white
+                color = mBitmap.getPixel(mRect.right / 2, mRect.bottom / 2);
+                isDarkStyle = isDarkStyle(color);
+            } catch (Exception ignore) {
+            }
+        }else {
+            color = populationSwatch.getRgb();
+            isDarkStyle = isDarkStyle(color);
+        }
+        return new Model(color, isDarkStyle);
+    }
+
+    private boolean isDarkStyle(int color) {
+        boolean isDarkStyle = false;
+        ColorUtils.colorToHSL(color, mTemp);
+        if (mTemp[2] <= BLACK_MAX_LIGHTNESS) {
+            isDarkStyle = false;
+        } else if (mTemp[2] >= WHITE_MIN_LIGHTNESS) {
+            isDarkStyle = true;
+        }
+        return isDarkStyle;
     }
 
     static class Model{

@@ -4,16 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.albert.demo.NavigationBarActivity"
-    >
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        app:title="NavigationBar"
-        >
-
-    </android.support.v7.widget.Toolbar>
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="cn.albert.demo.DrawerActivity"
+    tools:showIn="@layout/app_bar_drawer">
 
 </android.support.constraint.ConstraintLayout>

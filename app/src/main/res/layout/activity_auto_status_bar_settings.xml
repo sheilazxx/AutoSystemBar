@@ -4,16 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.albert.demo.NavigationBarActivity"
-    >
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        app:title="NavigationBar"
-        >
-
-    </android.support.v7.widget.Toolbar>
+    tools:context="cn.albert.demo.AutoStatusBarSettingsActivity">
 
 </android.support.constraint.ConstraintLayout>

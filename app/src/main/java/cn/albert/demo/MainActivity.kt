@@ -19,9 +19,10 @@ class MainActivity : AppCompatActivity() {
 
     object Static{
 
-        val DATAS = listOf(Data(AutoStatusBarActivity::class.java,"auto status bar"),
-                Data(NavigationBarActivity::class.java, "navigation bar"),
-                Data(NavigationBarActivity::class.java, "navigation bar"))
+        val DATAS = listOf(Data(AutoStatusBarSettingsActivity::class.java,"自动配置状态栏颜色"),
+                Data(ImmersedActivity::class.java, "沉浸式状态栏"),
+                Data(NavigationBarActivity::class.java, "改变导航栏颜色"),
+                Data(DrawerActivity::class.java, "抽屉布局"))
     }
 
     data class Data(val clazz: Class<out Activity>, val title: String)
