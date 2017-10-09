@@ -1,9 +1,12 @@
+
+
 一句代码适配4.4以上沉浸状态栏和沉浸导航栏, 状态栏颜色和样式自动根据状态栏下面的背景颜色自动调整, 适配魅族，小米等国产手机.
 
-#### Screenshot
+
+### Screenshot
 <img src="gif.gif" width="270">  <img src="Screenshot_01.png" width="270">  <img src="Screenshot_02.png"  width="270">  <img src="Screenshot_03.png"  width="270">
 
-#### Usage
+### Usage
 
 ```java
     SystemBarHelper.Builder().into(activity)
@@ -29,7 +32,7 @@
    helper.enableImmersedNavigationBar()
 ```
 
-#### Feature
+### Feature
 1. 根据状态栏下面的背景颜色自动调整状态栏的颜色
 2. 根据状态栏下面的背景颜色自动调整状态栏时间,电量等风格
 3. 设置图片嵌入状态栏,图片嵌入导航栏
