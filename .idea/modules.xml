@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AutoSystemBar.iml" filepath="$PROJECT_DIR$/AutoSystemBar.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/autosystembar/library.iml" filepath="$PROJECT_DIR$/autosystembar/library.iml" />
     </modules>
   </component>
 </project>

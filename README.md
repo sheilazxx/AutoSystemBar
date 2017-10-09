@@ -6,8 +6,12 @@
 ### Screenshot
 <img src="gif.gif" width="270">  <img src="Screenshot_01.png" width="270">  <img src="Screenshot_02.png"  width="270">  <img src="Screenshot_03.png"  width="270">
 
-### Usage
+### Gradle
+```gradle
+    compile 'cn.albert:autosystembar:1.0'
+```
 
+### Usage
 ```java
     SystemBarHelper.Builder().into(activity)
 ```
