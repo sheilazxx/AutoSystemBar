@@ -1,10 +1,7 @@
 一句代码适配4.4以上沉浸状态栏和沉浸导航栏, 状态栏颜色和样式自动根据状态栏下面的背景颜色自动调整, 适配魅族，小米等国产手机.
 
-#### Sample
-![Git](gif.gif)
-![Image](Screenshot_01.png)
-![Image](Screenshot_02.png)
-![Image](Screenshot_03.png)
+#### Screenshot
+<image src="gif.gif" width="270">  <image src="Screenshot_01.png" width="270">  <image src="Screenshot_02.png"  width="270">  <image src="Screenshot_03.png"  width="270">
 
 #### Usage
 
@@ -24,7 +21,7 @@
 ```
 
 ```java
-   SystemBarHelper helper = SystemBarHelper.Builder().into(activity);    // SystemBarHelper也Builder有相应的方法,方便动态设置
+   SystemBarHelper helper = SystemBarHelper.Builder().into(activity);
    helper.setNavigationBarColor()
    helper.setStatusBarColor()
    helper.statusBarFontStyle()

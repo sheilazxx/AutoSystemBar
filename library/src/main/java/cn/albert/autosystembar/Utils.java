@@ -81,6 +81,7 @@ class Utils {
     }
 
 
+    private static final String KEY_MIUI_VERSION = "ro.build.version.incremental";
     private static final String KEY_MIUI_VERSION_NAME = "ro.miui.ui.version.name";
     private static final String KEY_EMUI_VERSION_NAME = "ro.build.version.emui";
 
@@ -89,8 +90,7 @@ class Utils {
             Class<?> clz = Class.forName("android.os.SystemProperties");
             Method get = clz.getMethod("get", String.class, String.class);
             return (String) get.invoke(clz, key, defaultValue);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return defaultValue;
     }
@@ -101,11 +101,32 @@ class Utils {
         return !TextUtils.isEmpty(property) && ("EmotionUI 3".equals(property) || property.contains("EmotionUI_3.1"));
     }
 
-    static boolean isAfterMIUI_7_7_13(){
+    static boolean isMIUI() {
         String property = getSystemProperty(KEY_MIUI_VERSION_NAME, "");
-        Log.d(TAG, "isAfterMIUI_7_7_13: " + property);
-        // TODO: 2017/9/27
-        return false;
+        return !TextUtils.isEmpty(property);
+    }
+
+    static boolean isAfterMIUI_7_7_13(){
+        if(!isMIUI()){
+            return false;
+        }
+        String property = getSystemProperty(KEY_MIUI_VERSION, "");
+        boolean flag;
+        try {
+            String[] str = property.split(".");
+            int tempVersion = Integer.valueOf(str[0]);
+            if(tempVersion > 7){
+                flag =  true;
+            }else if (tempVersion == 7) {
+                tempVersion = Integer.valueOf(str[1]);
+                flag =  tempVersion > 7 || tempVersion == 7 && Integer.valueOf(str[2]) >= 13;
+            }else {
+                flag =  false;
+            }
+        }catch (Exception ignored){
+            flag = false;
+        }
+        return flag;
     }
 
     static boolean isFlymeOS() {

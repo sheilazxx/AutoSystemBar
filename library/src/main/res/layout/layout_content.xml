@@ -3,6 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/status_view"
+        android:layout_above="@+id/navigation_view"
+        >
+    </FrameLayout>
+
     <cn.albert.autosystembar.SystemBarView
         android:id="@+id/status_view"
         android:layout_width="match_parent"
@@ -18,14 +27,5 @@
         android:visibility="gone"
         android:layout_alignParentBottom="true"
         />
-
-    <FrameLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/status_view"
-        android:layout_above="@+id/navigation_view"
-        >
-    </FrameLayout>
 
 </merge>

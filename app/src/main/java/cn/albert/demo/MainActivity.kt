@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import cn.albert.autosystembar.SystemBarHelper
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -48,5 +49,18 @@ class MainActivity : AppCompatActivity() {
             _, _, position ->
             startActivity(Intent(applicationContext, adapter.data[position].clazz))
         }
+
+        Log.d("0----098880", getSystemProperty("ro.build.product", "defaultValue"))
+    }
+
+    private fun getSystemProperty(key: String, defaultValue: String): String {
+        try {
+            val clz = Class.forName("android.os.SystemProperties")
+            val get = clz.getMethod("get", String::class.java, String::class.java)
+            return get.invoke(clz, key, defaultValue) as String
+        } catch (ignored: Exception) {
+        }
+
+        return defaultValue
     }
 }
