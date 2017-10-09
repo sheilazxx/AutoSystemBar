@@ -8,7 +8,7 @@
 
 ### Gradle
 ```gradle
-    compile 'cn.albert:autosystembar:1.0'
+    compile 'cn.albert:autosystembar:1.0.0'
 ```
 
 ### Usage

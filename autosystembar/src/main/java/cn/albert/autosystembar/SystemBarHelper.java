@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,7 @@ public class SystemBarHelper {
 
     public static final int STATUS_BAR_DARK_FONT_STYLE = 2;
     public static final int STATUS_BAR_LIGHT_FONT_STYLE = 1;
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_BAR_DARK_FONT_STYLE, STATUS_BAR_LIGHT_FONT_STYLE})
     public @interface StatusBarFontStyle {}
 

@@ -41,6 +41,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile project(':autosystembar')
 
+//    compile 'cn.albert:autosystembar:1.0.0'
     compile 'net.margaritov.preference.colorpicker.ColorPickerPreference:ColorPickerPreference:1.0.0'
 }
 repositories {
