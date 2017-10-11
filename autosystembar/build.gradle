@@ -20,7 +20,7 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
 
 
     defaultConfig {
@@ -52,7 +52,7 @@ dependencies {
     })
 }
 
-version = "1.0.0"
+version = "1.0.1"
 
 def siteUrl = 'https://github.com/lliuguangbo/AutoSystemBar'
 def gitUrl = 'https://github.com/lliuguangbo/AutoSystemBar.git'

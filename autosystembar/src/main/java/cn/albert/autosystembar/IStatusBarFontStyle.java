@@ -92,7 +92,7 @@ interface IStatusBarFontStyle {
 
         @Override
         public boolean verify() {
-            return isAfterMIUI_7_7_13();
+            return !isAfterMIUI_7_7_13();
         }
     }
 

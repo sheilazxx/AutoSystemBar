@@ -113,8 +113,7 @@ public class SystemBarHelper {
     public void statusBarFontStyle(@StatusBarFontStyle int statusBarFontStyle) {
         boolean isDarkFont = statusBarFontStyle == STATUS_BAR_DARK_FONT_STYLE;
         for (IStatusBarFontStyle style: STATUS_BAR_FONT_STYLES){
-            if(style.verify()){
-                style.statusBarFontStyle(mBuilder.mActivity, isDarkFont);
+            if(style.verify() && style.statusBarFontStyle(mBuilder.mActivity, isDarkFont)){
                 break;
             }
         }
@@ -283,19 +282,19 @@ public class SystemBarHelper {
                 });
 
                 InternalLayout newContent = new InternalLayout(activity);
-
+                newContent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 View originContent = drawerLayout.getChildAt(0);
                 View originDrawer = drawerLayout.getChildAt(1);
 
                 drawerLayout.removeView(originContent);
 
-                newContent.setStatusBarVisibility(true);
                 newContent.setContentView(originContent);
                 drawerLayout.addView(newContent, 0);
                 mInternalLayout = newContent;
             }else {
                 realContent.removeView(content);
                 InternalLayout layout = new InternalLayout(activity);
+                layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 layout.setContentView(content);
                 realContent.addView(layout);
                 mInternalLayout = layout;

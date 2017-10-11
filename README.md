@@ -8,7 +8,10 @@
 
 ### Gradle
 ```gradle
-    compile 'cn.albert:autosystembar:1.0.0'
+    compile 'cn.albert:autosystembar:1.0.1'
+
+    compile 'com.android.support:appcompat-v7:version'
+    compile "com.android.support:palette-v7:version"
 ```
 
 ### Usage

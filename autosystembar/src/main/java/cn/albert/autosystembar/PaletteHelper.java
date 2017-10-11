@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.List;
 
 class PaletteHelper {
 
+    private static final String TAG = "PaletteHelper";
     private Palette.Builder mBuilder;
     private boolean mIsCanceled;
     private float[] mTemp = new float[3];
@@ -26,6 +28,8 @@ class PaletteHelper {
     private static final float MIDDLE_LIGHTNESS = 0.50f;
     private Rect mRect;
     private Bitmap mBitmap;
+
+    private static final boolean DEBUG = true;
 
     private static final Palette.Filter FILTER = new Palette.Filter() {
 
@@ -42,6 +46,7 @@ class PaletteHelper {
         mRect = rect;
         mBitmap = bitmap;
         mBuilder = new Palette.Builder(bitmap)
+                .clearFilters()
                 .addFilter(FILTER)
                 .setRegion(rect.left, rect.top, rect.right, rect.bottom);
     }
@@ -83,6 +88,9 @@ class PaletteHelper {
                 }
             });
             populationSwatch = swatches.get(0);
+            if(DEBUG){
+                Log.d(TAG, "findCloseColorModel: " + populationSwatch);
+            }
         }
 
         boolean isDarkStyle = false;
@@ -92,6 +100,9 @@ class PaletteHelper {
                 // bitmap is get close to full black or white
                 color = mBitmap.getPixel(mRect.right / 2, mRect.bottom / 2);
                 isDarkStyle = isDarkStyle(color);
+                if(DEBUG){
+                    Log.d(TAG, "populationSwatch == null , color: " + color);
+                }
             } catch (Exception ignore) {
             }
         }else {
